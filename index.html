@@ -1,0 +1,942 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Find New People Nearby</title>
+		<meta
+			name="description"
+			content="Meet new people nearby in a fast, simple, mobile-friendly experience."
+		/>
+		<style>
+			:root {
+				--bg: #0f1115;
+				--card: rgba(255, 255, 255, 0.08);
+				--card-2: rgba(255, 255, 255, 0.12);
+				--text: #f5f7fb;
+				--muted: #b9c0cd;
+				--accent: #ff4d7a;
+				--accent-2: #ff7a59;
+				--ok: #35d07f;
+				--shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+				--radius: 22px;
+				--max: 1120px;
+			}
+
+			* {
+				box-sizing: border-box;
+			}
+			html,
+			body {
+				margin: 0;
+				padding: 0;
+			}
+			body {
+				font-family:
+					Inter,
+					system-ui,
+					-apple-system,
+					Segoe UI,
+					Roboto,
+					Arial,
+					sans-serif;
+				color: var(--text);
+				background:
+					radial-gradient(
+						circle at 10% 10%,
+						rgba(255, 77, 122, 0.22),
+						transparent 30%
+					),
+					radial-gradient(
+						circle at 90% 20%,
+						rgba(255, 122, 89, 0.18),
+						transparent 25%
+					),
+					radial-gradient(
+						circle at 50% 100%,
+						rgba(80, 110, 255, 0.14),
+						transparent 35%
+					),
+					var(--bg);
+				min-height: 100vh;
+				overflow-x: hidden;
+			}
+
+			a {
+				color: inherit;
+				text-decoration: none;
+			}
+			img {
+				display: block;
+				max-width: 100%;
+			}
+
+			.wrap {
+				width: min(calc(100% - 28px), var(--max));
+				margin: 0 auto;
+			}
+
+			.nav {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding: 18px 0;
+			}
+
+			.brand {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				font-weight: 800;
+				letter-spacing: 0.2px;
+			}
+
+			.brand-mark {
+				width: 38px;
+				height: 38px;
+				border-radius: 14px;
+				background: linear-gradient(135deg, var(--accent), var(--accent-2));
+				box-shadow: var(--shadow);
+				display: grid;
+				place-items: center;
+				font-size: 18px;
+			}
+
+			.nav-badge {
+				font-size: 13px;
+				color: var(--muted);
+				padding: 10px 14px;
+				border-radius: 999px;
+				background: var(--card);
+				border: 1px solid rgba(255, 255, 255, 0.08);
+				backdrop-filter: blur(10px);
+			}
+
+			.hero {
+				padding: 18px 0 32px;
+				display: grid;
+				grid-template-columns: 1.05fr 0.95fr;
+				gap: 28px;
+				align-items: center;
+			}
+
+			.eyebrow {
+				display: inline-flex;
+				align-items: center;
+				gap: 8px;
+				padding: 9px 12px;
+				background: rgba(255, 255, 255, 0.08);
+				border: 1px solid rgba(255, 255, 255, 0.08);
+				border-radius: 999px;
+				color: #ffe7ed;
+				font-size: 13px;
+				margin-bottom: 16px;
+				backdrop-filter: blur(10px);
+			}
+
+			.dot {
+				width: 8px;
+				height: 8px;
+				border-radius: 50%;
+				background: var(--ok);
+				box-shadow: 0 0 0 6px rgba(53, 208, 127, 0.14);
+				animation: pulse 1.8s infinite;
+			}
+
+			@keyframes pulse {
+				0%,
+				100% {
+					transform: scale(1);
+					opacity: 1;
+				}
+				50% {
+					transform: scale(1.12);
+					opacity: 0.8;
+				}
+			}
+
+			h1 {
+				font-size: clamp(34px, 7vw, 62px);
+				line-height: 0.98;
+				letter-spacing: -1.5px;
+				margin: 0 0 14px;
+			}
+
+			.grad {
+				background: linear-gradient(
+					135deg,
+					#fff 10%,
+					#ffd6df 40%,
+					#ff8a6e 100%
+				);
+				-webkit-background-clip: text;
+				background-clip: text;
+				color: transparent;
+			}
+
+			.sub {
+				font-size: clamp(16px, 2.2vw, 20px);
+				color: var(--muted);
+				max-width: 610px;
+				margin: 0 0 20px;
+			}
+
+			.points {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 12px;
+				margin: 0 0 24px;
+			}
+
+			.point {
+				padding: 12px 14px;
+				border-radius: 14px;
+				background: var(--card);
+				border: 1px solid rgba(255, 255, 255, 0.08);
+				color: #edf1f8;
+				font-size: 14px;
+				backdrop-filter: blur(10px);
+			}
+
+			.cta-row {
+				display: flex;
+				gap: 12px;
+				flex-wrap: wrap;
+				align-items: center;
+			}
+
+			.btn {
+				appearance: none;
+				border: 0;
+				cursor: pointer;
+				border-radius: 16px;
+				padding: 16px 22px;
+				font-size: 16px;
+				font-weight: 800;
+				transition:
+					0.18s transform ease,
+					0.18s opacity ease,
+					0.18s box-shadow ease;
+			}
+
+			.btn:hover {
+				transform: translateY(-1px);
+			}
+			.btn:active {
+				transform: translateY(0);
+			}
+
+			.btn-primary {
+				color: white;
+				background: linear-gradient(135deg, var(--accent), var(--accent-2));
+				box-shadow: 0 14px 34px rgba(255, 77, 122, 0.28);
+			}
+
+			.btn-secondary {
+				color: var(--text);
+				background: rgba(255, 255, 255, 0.06);
+				border: 1px solid rgba(255, 255, 255, 0.1);
+				backdrop-filter: blur(10px);
+			}
+
+			.mini-proof {
+				display: flex;
+				align-items: center;
+				gap: 12px;
+				color: var(--muted);
+				font-size: 14px;
+				margin-top: 16px;
+			}
+
+			.avatars {
+				display: flex;
+				align-items: center;
+			}
+
+			.avatars img {
+				width: 34px;
+				height: 34px;
+				object-fit: cover;
+				border-radius: 50%;
+				border: 2px solid rgba(15, 17, 21, 0.85);
+				margin-left: -10px;
+			}
+
+			.avatars img:first-child {
+				margin-left: 0;
+			}
+
+			.visual {
+				position: relative;
+				min-height: 560px;
+			}
+
+			.phone {
+				position: absolute;
+				inset: 0;
+				margin: auto;
+				width: min(100%, 390px);
+				height: 560px;
+				border-radius: 36px;
+				padding: 14px;
+				background: linear-gradient(
+					180deg,
+					rgba(255, 255, 255, 0.16),
+					rgba(255, 255, 255, 0.06)
+				);
+				border: 1px solid rgba(255, 255, 255, 0.12);
+				box-shadow: var(--shadow);
+				backdrop-filter: blur(16px);
+				transform: rotate(-4deg);
+			}
+
+			.screen {
+				height: 100%;
+				border-radius: 26px;
+				overflow: hidden;
+				background: #171a21;
+				position: relative;
+			}
+
+			.screen img.hero-photo {
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+				filter: saturate(1.04) contrast(1.03);
+			}
+
+			.overlay {
+				position: absolute;
+				inset: 0;
+				background: linear-gradient(
+					180deg,
+					rgba(0, 0, 0, 0.02),
+					rgba(0, 0, 0, 0.12) 45%,
+					rgba(0, 0, 0, 0.72) 100%
+				);
+			}
+
+			.pill-top {
+				position: absolute;
+				top: 16px;
+				left: 16px;
+				right: 16px;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+			}
+
+			.tiny {
+				padding: 8px 10px;
+				border-radius: 999px;
+				font-size: 12px;
+				background: rgba(255, 255, 255, 0.16);
+				border: 1px solid rgba(255, 255, 255, 0.12);
+				backdrop-filter: blur(8px);
+			}
+
+			.profile-card {
+				position: absolute;
+				left: 16px;
+				right: 16px;
+				bottom: 16px;
+				padding: 16px;
+				border-radius: 22px;
+				background: rgba(14, 16, 21, 0.65);
+				border: 1px solid rgba(255, 255, 255, 0.08);
+				backdrop-filter: blur(14px);
+			}
+
+			.profile-row {
+				display: flex;
+				justify-content: space-between;
+				gap: 12px;
+				align-items: center;
+				margin-bottom: 10px;
+			}
+
+			.name-age {
+				font-size: 24px;
+				font-weight: 800;
+			}
+
+			.meta {
+				color: #d3d8e3;
+				font-size: 14px;
+			}
+
+			.chips {
+				display: flex;
+				gap: 8px;
+				flex-wrap: wrap;
+				margin-top: 12px;
+			}
+
+			.chip {
+				border-radius: 999px;
+				padding: 8px 11px;
+				font-size: 12px;
+				background: rgba(255, 255, 255, 0.08);
+				border: 1px solid rgba(255, 255, 255, 0.08);
+			}
+
+			.floating {
+				position: absolute;
+				border-radius: 20px;
+				background: rgba(255, 255, 255, 0.08);
+				border: 1px solid rgba(255, 255, 255, 0.08);
+				backdrop-filter: blur(14px);
+				box-shadow: var(--shadow);
+				padding: 14px;
+				width: 220px;
+			}
+
+			.float-a {
+				top: 38px;
+				left: 0;
+				transform: rotate(-7deg);
+			}
+			.float-b {
+				right: 0;
+				bottom: 48px;
+				transform: rotate(6deg);
+			}
+
+			.floating strong {
+				display: block;
+				margin-bottom: 6px;
+				font-size: 15px;
+			}
+
+			.floating p {
+				margin: 0;
+				font-size: 13px;
+				color: var(--muted);
+				line-height: 1.4;
+			}
+
+			.section {
+				padding: 26px 0 12px;
+			}
+
+			.section-title {
+				font-size: clamp(28px, 4vw, 40px);
+				line-height: 1.02;
+				letter-spacing: -1px;
+				margin: 0 0 12px;
+			}
+
+			.section-sub {
+				color: var(--muted);
+				max-width: 760px;
+				margin: 0 0 18px;
+				font-size: 17px;
+			}
+
+			.grid {
+				display: grid;
+				grid-template-columns: repeat(3, 1fr);
+				gap: 16px;
+			}
+
+			.feature,
+			.story,
+			.faq-item,
+			.final-cta {
+				background: var(--card);
+				border: 1px solid rgba(255, 255, 255, 0.08);
+				border-radius: var(--radius);
+				backdrop-filter: blur(12px);
+			}
+
+			.feature {
+				padding: 18px;
+			}
+
+			.feature h3 {
+				margin: 0 0 8px;
+				font-size: 18px;
+			}
+
+			.feature p {
+				margin: 0;
+				color: var(--muted);
+				line-height: 1.55;
+				font-size: 15px;
+			}
+
+			.stories {
+				display: grid;
+				grid-template-columns: repeat(3, 1fr);
+				gap: 16px;
+				margin-top: 14px;
+			}
+
+			.story {
+				overflow: hidden;
+			}
+
+			.story img {
+				width: 100%;
+				height: 270px;
+				object-fit: cover;
+			}
+
+			.story-body {
+				padding: 14px;
+			}
+
+			.story-head {
+				display: flex;
+				justify-content: space-between;
+				gap: 10px;
+				align-items: center;
+				margin-bottom: 8px;
+			}
+
+			.story-name {
+				font-weight: 800;
+				font-size: 18px;
+			}
+
+			.badge {
+				padding: 7px 9px;
+				border-radius: 999px;
+				background: rgba(53, 208, 127, 0.12);
+				color: #9ef0bf;
+				font-size: 12px;
+				border: 1px solid rgba(53, 208, 127, 0.18);
+			}
+
+			.story-copy {
+				color: var(--muted);
+				font-size: 14px;
+				line-height: 1.55;
+				margin: 0 0 14px;
+			}
+
+			.story-actions {
+				display: flex;
+				gap: 10px;
+			}
+
+			.story-actions .btn {
+				padding: 12px 14px;
+				font-size: 14px;
+				flex: 1;
+				text-align: center;
+			}
+
+			.faq {
+				display: grid;
+				gap: 12px;
+				margin-top: 14px;
+			}
+
+			.faq-item {
+				padding: 16px 18px;
+			}
+
+			.faq-item strong {
+				display: block;
+				margin-bottom: 8px;
+				font-size: 16px;
+			}
+
+			.faq-item p {
+				margin: 0;
+				color: var(--muted);
+				line-height: 1.55;
+			}
+
+			.final-cta {
+				margin: 22px 0 34px;
+				padding: 24px;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 18px;
+			}
+
+			.final-cta h3 {
+				margin: 0 0 8px;
+				font-size: 28px;
+				line-height: 1.05;
+			}
+
+			.final-cta p {
+				margin: 0;
+				color: var(--muted);
+				font-size: 16px;
+			}
+
+			.footer {
+				padding: 10px 0 28px;
+				color: #98a1af;
+				font-size: 13px;
+				display: flex;
+				justify-content: space-between;
+				gap: 12px;
+				flex-wrap: wrap;
+			}
+
+			.footer a {
+				text-decoration: underline;
+			}
+
+			@media (max-width: 980px) {
+				.hero,
+				.grid,
+				.stories,
+				.final-cta {
+					grid-template-columns: 1fr;
+					display: grid;
+				}
+
+				.hero {
+					gap: 10px;
+				}
+
+				.visual {
+					min-height: 500px;
+				}
+
+				.float-a {
+					top: 8px;
+					left: 6px;
+				}
+				.float-b {
+					right: 6px;
+					bottom: 10px;
+				}
+
+				.final-cta {
+					display: block;
+				}
+
+				.final-cta .cta-row {
+					margin-top: 16px;
+				}
+			}
+
+			@media (max-width: 640px) {
+				.nav {
+					padding-top: 14px;
+				}
+				.nav-badge {
+					display: none;
+				}
+				.visual {
+					min-height: 440px;
+				}
+				.phone {
+					height: 470px;
+					width: min(100%, 330px);
+				}
+				.floating {
+					width: 170px;
+					padding: 12px;
+				}
+				.story img {
+					height: 240px;
+				}
+				.final-cta h3 {
+					font-size: 24px;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div class="wrap">
+			<header class="nav">
+				<div class="brand">
+					<div class="brand-mark">❤</div>
+					<div>NearbyConnect</div>
+				</div>
+				<div class="nav-badge">Fast • Mobile Friendly • Private</div>
+			</header>
+
+			<main>
+				<section class="hero">
+					<div>
+						<div class="eyebrow">
+							<span class="dot"></span> New profiles are updating in real time
+						</div>
+						<h1>
+							Meet <span class="grad">interesting people</span> nearby in
+							minutes.
+						</h1>
+						<p class="sub">
+							A clean, mobile-first experience designed to help you start a
+							conversation quickly and comfortably. Browse profiles, filter by
+							interests, and connect when you're ready.
+						</p>
+
+						<div class="points">
+							<div class="point">📍 Location-based discovery</div>
+							<div class="point">💬 Quick profile view</div>
+							<div class="point">📱 Optimized for mobile</div>
+							<div class="point">⚡ Fast onboarding</div>
+						</div>
+
+						<div class="cta-row">
+							<a
+								class="btn btn-primary"
+								href="https://grl2mrb.date-hotlove.com/xanpy38"
+								>Open Nearby Profiles</a
+							>
+							<a class="btn btn-secondary" href="#profiles">Preview Profiles</a>
+						</div>
+
+						<div class="mini-proof">
+							<div class="avatars">
+								<img
+									src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80"
+									alt="User avatar"
+								/>
+								<img
+									src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&q=80"
+									alt="User avatar"
+								/>
+								<img
+									src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=120&q=80"
+									alt="User avatar"
+								/>
+							</div>
+							<div>
+								Simple profile preview • lightweight page • clear call to action
+							</div>
+						</div>
+					</div>
+
+					<div class="visual" aria-hidden="true">
+						<div class="floating float-a">
+							<strong>Easy first step</strong>
+							<p>
+								Keep the page simple, let people preview the experience, then
+								move them forward with one clear action.
+							</p>
+						</div>
+
+						<div class="phone">
+							<div class="screen">
+								<img
+									class="hero-photo"
+									src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=900&q=80"
+									alt="Featured profile"
+								/>
+								<div class="overlay"></div>
+								<div class="pill-top">
+									<div class="tiny">Nearby</div>
+									<div class="tiny">Online</div>
+								</div>
+								<div class="profile-card">
+									<div class="profile-row">
+										<div>
+											<div class="name-age">Anna, 24</div>
+											<div class="meta">
+												4 km away • loves cafés, music, travel
+											</div>
+										</div>
+										<div class="tiny">Active</div>
+									</div>
+									<div class="chips">
+										<div class="chip">Open to chat</div>
+										<div class="chip">Weekend plans</div>
+										<div class="chip">New in town</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="floating float-b">
+							<strong>Mobile-first layout</strong>
+							<p>
+								Hero image, short copy, visual proof, and one primary button
+								above the fold.
+							</p>
+						</div>
+					</div>
+				</section>
+
+				<section class="section">
+					<h2 class="section-title">Why this landing page works</h2>
+					<p class="section-sub">
+						This version focuses on clarity, speed, and clean UX instead of
+						gimmicks. It keeps attention on the main value proposition and
+						reduces friction on the first click.
+					</p>
+					<div class="grid">
+						<div class="feature">
+							<h3>Clear value fast</h3>
+							<p>
+								The visitor understands what to expect within seconds: discover
+								nearby people, preview profiles, continue on mobile.
+							</p>
+						</div>
+						<div class="feature">
+							<h3>One primary action</h3>
+							<p>
+								No cluttered navigation, no confusing options. One strong CTA
+								keeps the flow focused and easy to follow.
+							</p>
+						</div>
+						<div class="feature">
+							<h3>Visual-first design</h3>
+							<p>
+								Large imagery, mobile framing, and clean profile cards help the
+								page feel modern and familiar without needing long copy.
+							</p>
+						</div>
+					</div>
+				</section>
+
+				<section class="section" id="profiles">
+					<h2 class="section-title">Profile previews</h2>
+					<p class="section-sub">
+						Use 3–6 preview cards with varied looks, locations, and interests.
+						Keep them tasteful and consistent with the actual destination
+						experience.
+					</p>
+					<div class="stories">
+						<article class="story">
+							<img
+								src="https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&w=900&q=80"
+								alt="Preview profile 1"
+							/>
+							<div class="story-body">
+								<div class="story-head">
+									<div class="story-name">Mia, 23</div>
+									<div class="badge">Online</div>
+								</div>
+								<p class="story-copy">
+									Coffee spots, gym mornings, and quick replies. Looking to meet
+									someone local and chat casually.
+								</p>
+								<div class="story-actions">
+									<a
+										class="btn btn-primary"
+										href="https://grl2mrb.date-hotlove.com/xanpy38"
+										>View</a
+									>
+									<a
+										class="btn btn-secondary"
+										href="https://grl2mrb.date-hotlove.com/xanpy38"
+										>Message</a
+									>
+								</div>
+							</div>
+						</article>
+
+						<article class="story">
+							<img
+								src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=900&q=80"
+								alt="Preview profile 2"
+							/>
+							<div class="story-body">
+								<div class="story-head">
+									<div class="story-name">Sofia, 26</div>
+									<div class="badge">Nearby</div>
+								</div>
+								<p class="story-copy">
+									Into travel, long walks, and live music. Open to new
+									conversations and meeting people nearby.
+								</p>
+								<div class="story-actions">
+									<a
+										class="btn btn-primary"
+										href="https://grl2mrb.date-hotlove.com/xanpy38"
+										>View</a
+									>
+									<a
+										class="btn btn-secondary"
+										href="https://grl2mrb.date-hotlove.com/xanpy38"
+										>Message</a
+									>
+								</div>
+							</div>
+						</article>
+
+						<article class="story">
+							<img
+								src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=900&q=80"
+								alt="Preview profile 3"
+							/>
+							<div class="story-body">
+								<div class="story-head">
+									<div class="story-name">Lina, 22</div>
+									<div class="badge">New</div>
+								</div>
+								<p class="story-copy">
+									Late-night talks, playlists, and spontaneous plans. Likes
+									simple, friendly conversations.
+								</p>
+								<div class="story-actions">
+									<a
+										class="btn btn-primary"
+										href="https://grl2mrb.date-hotlove.com/xanpy38"
+										>View</a
+									>
+									<a
+										class="btn btn-secondary"
+										href="https://grl2mrb.date-hotlove.com/xanpy38"
+										>Message</a
+									>
+								</div>
+							</div>
+						</article>
+					</div>
+				</section>
+
+				<section class="section">
+					<h2 class="section-title">Quick FAQ</h2>
+					<div class="faq">
+						<div class="faq-item">
+							<strong>Is this page mobile-friendly?</strong>
+							<p>
+								Yes. The layout is designed primarily for mobile screens, with
+								strong above-the-fold CTA placement and compressed sections for
+								fast scanning.
+							</p>
+						</div>
+						<div class="faq-item">
+							<strong>How should I customize it?</strong>
+							<p>
+								Replace the placeholder images, brand name, and CTA link. Keep
+								the copy short, truthful, and aligned with the actual offer
+								flow.
+							</p>
+						</div>
+						<div class="faq-item">
+							<strong>What should I avoid?</strong>
+							<p>
+								Avoid fake counters, fake messages, false urgency, or misleading
+								claims. Those can hurt trust, conversion quality, and platform
+								compliance.
+							</p>
+						</div>
+					</div>
+				</section>
+
+				<section class="final-cta">
+					<div>
+						<h3>Ready to explore nearby profiles?</h3>
+						<p>
+							Open the next step in a clean, friction-light flow built for
+							mobile users.
+						</p>
+					</div>
+					<div class="cta-row">
+						<a class="btn btn-primary" href="">Continue</a>
+						<a class="btn btn-secondary" href="#top">Back to top</a>
+					</div>
+				</section>
+			</main>
+
+			<footer class="footer">
+				<div>© 2026 NearbyConnect</div>
+				<div><a href="#">Privacy</a> · <a href="#">Terms</a></div>
+			</footer>
+		</div>
+	</body>
+</html>
